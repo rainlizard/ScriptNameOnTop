@@ -19,23 +19,32 @@ const colorBackground = Color8(66, 78, 120, 128)
 
 func _enter_tree():
 	turn_off_scripts_panel_if_on()
-	
+
 	# Wait until Godot Editor is fully loaded before continuing
 	while true:
 		await get_tree().process_frame
 		if scriptEditorMenu.get_children().size() >= 13:
 			break
-	
+
 	# Make everything in the top bar not expand, while the extensionTopBar will expand
 	for i in scriptEditorMenu.get_children():
 		i.size_flags_horizontal = 0
-	
+
 	# Add extensionTopBar
 	extensionTopBar = sceneTopBar.instantiate()
 	scriptEditorMenu.add_child(extensionTopBar)
 	scriptEditorMenu.move_child(extensionTopBar,scriptEditorMenu.get_child_count()-8)
 	extensionTopBar.get_node("Button").connect("pressed",Callable(self,"_on_topbar_button_pressed"))
 	extensionTopBar.get_node("Button").get_node("MenuButton").get_popup().connect("id_pressed",Callable(self,"_on_RecentSubmenu_Pressed"))
+	extensionTopBar.get_node("Button").get_node("MenuButton").get_popup().connect("window_input", Callable(self, "_on_RecentSubmenu_window_input"))
+
+
+func _on_RecentSubmenu_window_input(event):
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_RIGHT:
+			var pop = extensionTopBar.get_node("Button").get_node("MenuButton").get_popup()
+			recentlyOpened.erase(pop.get_item_text(pop.get_focused_item()))
+			build_recent_scripts_list(pop)
 
 func _on_RecentSubmenu_Pressed(pressedID):
 	var pop = extensionTopBar.get_node("Button").get_node("MenuButton").get_popup()
@@ -45,7 +54,7 @@ func _on_RecentSubmenu_Pressed(pressedID):
 		editorInterface.edit_script(loadScript)
 
 func _on_topbar_button_pressed():
-	
+
 	var btn = extensionTopBar.get_node("Button")
 	var menuBtn = btn.get_node("MenuButton")
 	var popup = menuBtn.get_popup()
@@ -55,7 +64,7 @@ func _on_topbar_button_pressed():
 	else:
 		menuBtn.show_popup()
 	btn.release_focus()
-	
+
 
 func build_recent_scripts_list(popup):
 	popup.clear()
@@ -83,7 +92,7 @@ func _process(_delta):
 		currentEditor = scriptEditor.get_current_editor()
 		editing_something_new(currentEditor)
 	tree_recursive_highlight(theTree.get_root())
-	
+
 	var bottomBar = get_bottom_bar()
 	if is_instance_valid(bottomBar):
 		# Show bottom row only if there's an error message
@@ -104,7 +113,7 @@ func editing_something_new(currentEditor):
 		else:
 			newText = ""
 			extensionTopBar.modulate = Color(0,0,0,0) # Make it invisible if not using it
-		
+
 		extensionTopBar.get_node("Button").text = newText
 		extensionTopBar.get_node("Button").tooltip_text = newText
 
@@ -120,13 +129,13 @@ func tree_recursive_highlight(item):
 	if item != null:
 		while true:
 			item.set_custom_bg_color(0, Color(0,0,0,0))
-			
+
 			# Set color of only Script Buttons, not the Visibility Buttons
 			for i in item.get_button_count(0):
 				var tooltipTxt = item.get_button_tooltip_text(0,i)
-				
+
 				item.set_button_color(0, i, Color(1,1,1,1))
-				
+
 				if tooltipTxt.begins_with("Open Script: ") and is_main_screen_visible(2) == true:
 					item.set_button_color(0, i, Color(1,1,1,1))
 					# Change the script tooltip into a script path
@@ -140,7 +149,7 @@ func tree_recursive_highlight(item):
 						if scriptPath == currScript.resource_path:
 							item.set_button_color(0, i, colorButtons)
 							item.set_custom_bg_color(0, colorBackground)
-			
+
 			tree_recursive_highlight(item.get_first_child())
 			item = item.get_next()
 			if item == null:
