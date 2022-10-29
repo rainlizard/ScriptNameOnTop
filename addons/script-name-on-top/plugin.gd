@@ -70,7 +70,10 @@ func build_recent_scripts_list() -> void:
 	for i in recently_opened.size():
 		var filepath: String = recently_opened[i]
 		extension_popup.add_item(filepath)
-
+	
+	# Don't bother opening an empty menu
+	if recently_opened.size() == 0:
+		extension_popup.visible = false
 
 func add_recent_script_to_array(recent_string: String) -> void:
 	var find_existing: int = recently_opened.find(recent_string)
@@ -154,7 +157,13 @@ func _on_recent_submenu_window_input(event: InputEvent) -> void:
 		if event.button_index == MOUSE_BUTTON_RIGHT:
 			recently_opened.erase(extension_popup.get_item_text(extension_popup.get_focused_item()))
 			build_recent_scripts_list()
-			editing_something_new(script_editor.get_current_editor())
+			
+			if recently_opened.size() > 0:
+				# Refresh and display shrunken list correctly
+				extension_top_bar.show_popup()
+			else:
+				# Don't bother opening an empty menu
+				extension_popup.visible = false
 
 
 func _on_recent_submenu_pressed(pressedID: int) -> void:

@@ -1,17 +1,38 @@
-[gd_scene format=3 uid="uid://bkoewcfqqtqwb"]
+[gd_scene load_steps=3 format=3 uid="uid://bkoewcfqqtqwb"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ohwh3"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.141176, 0.164706, 0.2, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.129412)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bp3vf"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.141176, 0.164706, 0.2, 0)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.129412)
 
 [node name="TopBar" type="MenuButton"]
-unique_name_in_owner = true
-offset_right = 1152.0
-offset_bottom = 648.0
+offset_right = 40.0
+offset_bottom = 40.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
+theme_override_styles/normal = SubResource("StyleBoxFlat_ohwh3")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_bp3vf")
 flat = false
-item_count = 3
-popup/item_0/text = "aaaaaaaaaaa"
-popup/item_0/id = 0
-popup/item_1/text = "bbbbbbbbb"
-popup/item_1/id = 1
-popup/item_2/text = "cccccccccccc"
-popup/item_2/id = 2
+text_overrun_behavior = 3
+text_direction = 2
+switch_on_hover = true
