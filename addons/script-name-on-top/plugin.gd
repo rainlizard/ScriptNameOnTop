@@ -153,18 +153,24 @@ func tree_recursive_highlight(item) -> void:
 
 
 func _on_recent_submenu_window_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed:
-		if event.button_index == MOUSE_BUTTON_RIGHT:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
+		if event.pressed == true:
+			# Erase item from list
 			recently_opened.erase(extension_popup.get_item_text(extension_popup.get_focused_item()))
 			build_recent_scripts_list()
-			
 			if recently_opened.size() > 0:
 				# Refresh and display shrunken list correctly
 				extension_top_bar.show_popup()
 			else:
 				# Don't bother opening an empty menu
 				extension_popup.visible = false
-
+		else:
+			# Prevent switching to an item upon releasing right click
+			extension_popup.hide_on_item_selection = false
+			extension_popup.id_pressed.disconnect(_on_recent_submenu_pressed)
+			await get_tree().process_frame
+			extension_popup.hide_on_item_selection = true
+			extension_popup.id_pressed.connect(_on_recent_submenu_pressed)
 
 func _on_recent_submenu_pressed(pressedID: int) -> void:
 	var recent_string: String = extension_popup.get_item_text(pressedID)
