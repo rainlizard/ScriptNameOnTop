@@ -3,6 +3,7 @@ extends EditorPlugin
 
 const scene_top_bar: PackedScene = preload("res://addons/script-name-on-top/topbar.tscn")
 const MAX_RECENT_ITEMS = 10
+const WARNINGS_SHOW_BOTTOM_BAR = false
 const color_buttons := Color8(106, 180, 255, 255)
 const color_background := Color8(66, 78, 120, 128)
 
@@ -55,10 +56,14 @@ func _process(_delta: float) -> void:
 
 	var bottom_bar := get_bottom_bar()
 	if is_instance_valid(bottom_bar):
-		# Show bottom row only if there's an error message
+		# Show bottom bar if there's an error message
 		var lbl_error_message: Label = bottom_bar.get_child(1).get_child(0)
 		bottom_bar.visible = (lbl_error_message.text != "")
-
+		# Show bottom bar if there's a warning
+		if WARNINGS_SHOW_BOTTOM_BAR == true:
+			var btn_warnings: Button = bottom_bar.get_child(3)
+			if btn_warnings.visible == true:
+				bottom_bar.visible = true
 
 func _exit_tree() -> void:
 	if is_instance_valid(extension_top_bar):
