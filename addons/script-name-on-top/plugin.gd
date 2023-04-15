@@ -139,10 +139,10 @@ func tree_recursive_highlight(item) -> void:
 
 			item.set_button_color(0, i, Color(1,1,1,1))
 
-			if tooltip_text.begins_with("Open Script: ") and is_main_screen_visible(2) == true:
+			if tooltip_text.ends_with(".gd") and is_main_screen_visible(2) == true:
 				item.set_button_color(0, i, Color(1,1,1,1))
 				# Change the script tooltip into a script path
-				var script_path = tooltip_text.trim_prefix("Open Script: ")
+				var script_path = tooltip_text.get_slice(": ", 1)
 				script_path = script_path.trim_suffix("This script is currently running in the editor.")
 				script_path = script_path.strip_escapes()
 				#print(scriptPath)
