@@ -66,6 +66,9 @@ func _process(_delta: float) -> void:
 				bottom_bar.visible = true
 
 func _exit_tree() -> void:
+	get_editor_interface().get_script_editor().get_child(0).get_child(0).\
+	get_child(0).get_popup().emit_signal("id_pressed", 14)
+	get_bottom_bar().visible = true
 	if is_instance_valid(extension_top_bar):
 		extension_top_bar.queue_free()
 
