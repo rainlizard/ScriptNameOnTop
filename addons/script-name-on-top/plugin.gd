@@ -145,7 +145,7 @@ func _toggle_scripts_panel() -> void:
 
 func _toggle_bottom_bar() -> void:
 	var bottom_bar: Control = _get_bottom_bar()
-	if is_instance_valid(bottom_bar): return
+	if not is_instance_valid(bottom_bar): return
 
 	bottom_bar.visible = not _hide_bottom_bar
 
