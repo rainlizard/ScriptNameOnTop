@@ -66,10 +66,6 @@ func _ready() -> void:
 	while _script_editor_menu.get_children().size() < 13:
 		await get_tree().process_frame
 
-	# Make everything in the top bar not expand, while the extension_top_bar will expand
-	for i in _script_editor_menu.get_children():
-		i.size_flags_horizontal = 0
-
 	_add_extension_top_bar()
 
 	# Get script that is initially open
@@ -89,6 +85,10 @@ func _init_vars() -> void:
 
 
 func _add_extension_top_bar() -> void:
+	# Make everything in the top bar not expand, while the extension_top_bar will expand
+	for i in _script_editor_menu.get_children():
+		i.size_flags_horizontal = 0
+
 	_extension_top_bar = SCENE_TOP_BAR.instantiate()
 	_script_editor_menu.add_child(_extension_top_bar)
 	_script_editor_menu.move_child(_extension_top_bar, -8)
@@ -145,7 +145,7 @@ func _toggle_scripts_panel() -> void:
 
 func _toggle_bottom_bar() -> void:
 	var bottom_bar: Control = _get_bottom_bar()
-	if is_instance_valid(bottom_bar): return
+	if not is_instance_valid(bottom_bar): return
 
 	bottom_bar.visible = not _hide_bottom_bar
 
@@ -258,17 +258,16 @@ func _on_recent_submenu_pressed(pressedID: int) -> void:
 
 
 func _set_plugin_settings() -> void:
-	if not ProjectSettings.has_setting(HIDE_SCRIPTS_PANEL_CONFIG_INFO["name"]):
-		ProjectSettings.set_setting(HIDE_SCRIPTS_PANEL_CONFIG_INFO["name"], _hide_scripts_panel)
-		ProjectSettings.add_property_info(HIDE_SCRIPTS_PANEL_CONFIG_INFO)
+	_set_plugin_setting(HIDE_SCRIPTS_PANEL_CONFIG_INFO, _hide_scripts_panel)
+	_set_plugin_setting(HIDE_BOTTOM_BAR_CONFIG_INFO, _hide_bottom_bar)
+	_set_plugin_setting(SHOW_BOTTOM_BAR_WARNING_CONFIG_INFO, _show_bottom_bar_on_warning)
 
-	if not ProjectSettings.has_setting(HIDE_BOTTOM_BAR_CONFIG_INFO["name"]):
-		ProjectSettings.set_setting(HIDE_BOTTOM_BAR_CONFIG_INFO["name"], _hide_bottom_bar)
-		ProjectSettings.add_property_info(HIDE_BOTTOM_BAR_CONFIG_INFO)
 
-	if not ProjectSettings.has_setting(SHOW_BOTTOM_BAR_WARNING_CONFIG_INFO["name"]):
-		ProjectSettings.set_setting(SHOW_BOTTOM_BAR_WARNING_CONFIG_INFO["name"], _show_bottom_bar_on_warning)
-		ProjectSettings.add_property_info(SHOW_BOTTOM_BAR_WARNING_CONFIG_INFO)
+func _set_plugin_setting(config_info: Dictionary, value: Variant) -> void:
+	if ProjectSettings.has_setting(config_info["name"]): return
+
+	ProjectSettings.set_setting(config_info["name"], value)
+	ProjectSettings.add_property_info(config_info)
 
 
 func _get_plugin_settings() -> void:
