@@ -12,6 +12,7 @@ config_version=5
 
 script_name_on_top/hide_scripts_panel=false
 script_name_on_top/hide_bottom_bar=false
+script_name_on_top/show_bottom_bar_on_warning=true
 
 [application]
 
