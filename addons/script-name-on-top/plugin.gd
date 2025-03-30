@@ -264,10 +264,11 @@ func _set_plugin_settings() -> void:
 
 
 func _set_plugin_setting(config_info: Dictionary, value: Variant) -> void:
-	if ProjectSettings.has_setting(config_info["name"]): return
+	if not ProjectSettings.has_setting(config_info["name"]):
+		ProjectSettings.set_setting(config_info["name"], value)
 
-	ProjectSettings.set_setting(config_info["name"], value)
 	ProjectSettings.add_property_info(config_info)
+	ProjectSettings.set_initial_value(config_info["name"], value)
 
 
 func _get_plugin_settings() -> void:
