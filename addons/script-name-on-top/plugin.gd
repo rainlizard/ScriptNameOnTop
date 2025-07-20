@@ -141,6 +141,7 @@ func _get_file_display_name(file_path: String) -> String:
 	var result: String = file_path
 	if _short_file_path:
 		var file_path_split: PackedStringArray = file_path.rsplit('/', true, 2)
+		file_path_split.resize(3)
 		result = file_path_split[1].path_join(file_path_split[2])
 	
 	if _spaces_beetwen_file_path:
