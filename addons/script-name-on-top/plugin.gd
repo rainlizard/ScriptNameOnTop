@@ -24,9 +24,16 @@ const SHOW_BOTTOM_BAR_WARNING_CONFIG_INFO: Dictionary = {
 	"hint" = PROPERTY_HINT_NONE,
 }
 
+const SHOW_BOTTOM_BAR_ERROR_CONFIG_INFO: Dictionary = {
+	"name" = "addons/script_name_on_top/show_bottom_bar_on_error",
+	"type" = TYPE_BOOL,
+	"hint" = PROPERTY_HINT_NONE,
+}
+
 var _hide_scripts_panel: bool = false
 var _hide_bottom_bar: bool = false
 var _show_bottom_bar_on_warning: bool = true
+var _show_bottom_bar_on_error: bool = true
 
 var _editor_interface: EditorInterface
 var _script_editor: ScriptEditor
@@ -150,12 +157,20 @@ func _toggle_bottom_bar() -> void:
 	bottom_bar.visible = not _hide_bottom_bar
 
 	# This setting allows for overriding _hide_bottom_bar config
-	# Only when warnings are present in the editor
-	if not _show_bottom_bar_on_warning: return
 
-	var btn_warnings: Button = bottom_bar.get_child(3)
-	if btn_warnings.visible == true:
-		bottom_bar.visible = true
+	# Only when er	rors are present in the editor
+	if _show_bottom_bar_on_error:
+		var btn_errors: Button = bottom_bar.get_child(2)
+		if btn_errors.visible == true:
+			bottom_bar.visible = true
+			return
+	
+	# Only when warnings are present in the editor
+	if not _show_bottom_bar_on_warning:
+		var btn_warnings: Button = bottom_bar.get_child(3)
+		if btn_warnings.visible == true:
+			bottom_bar.visible = true
+			return
 
 
 func _editing_something_new(current_editor: ScriptEditorBase) -> void:
@@ -261,6 +276,7 @@ func _set_plugin_settings() -> void:
 	_set_plugin_setting(HIDE_SCRIPTS_PANEL_CONFIG_INFO, _hide_scripts_panel)
 	_set_plugin_setting(HIDE_BOTTOM_BAR_CONFIG_INFO, _hide_bottom_bar)
 	_set_plugin_setting(SHOW_BOTTOM_BAR_WARNING_CONFIG_INFO, _show_bottom_bar_on_warning)
+	_set_plugin_setting(SHOW_BOTTOM_BAR_ERROR_CONFIG_INFO, _show_bottom_bar_on_error)
 
 
 func _set_plugin_setting(config_info: Dictionary, value: Variant) -> void:
@@ -275,3 +291,4 @@ func _get_plugin_settings() -> void:
 	_hide_scripts_panel = ProjectSettings.get_setting(HIDE_SCRIPTS_PANEL_CONFIG_INFO["name"], false)
 	_hide_bottom_bar = ProjectSettings.get_setting(HIDE_BOTTOM_BAR_CONFIG_INFO["name"], false)
 	_show_bottom_bar_on_warning = ProjectSettings.get_setting(SHOW_BOTTOM_BAR_WARNING_CONFIG_INFO["name"], true)
+	_show_bottom_bar_on_error = ProjectSettings.get_setting(SHOW_BOTTOM_BAR_ERROR_CONFIG_INFO["name"], true)
