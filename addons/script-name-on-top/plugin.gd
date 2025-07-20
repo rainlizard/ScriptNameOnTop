@@ -47,7 +47,7 @@ var _hide_bottom_bar: bool = false
 var _show_bottom_bar_on_warning: bool = true
 var _show_bottom_bar_on_error: bool = true
 var _short_file_path: bool = true
-var _spaces_beetwen_file_path: bool = true
+var _spaces_between_file_path: bool = true
 
 var _editor_interface: EditorInterface
 var _script_editor: ScriptEditor
@@ -144,7 +144,7 @@ func _get_file_display_name(file_path: String) -> String:
 		file_path_split.resize(3)
 		result = file_path_split[1].path_join(file_path_split[2])
 	
-	if _spaces_beetwen_file_path:
+	if _spaces_between_file_path:
 		result.replace('/', ' / ')
 	return result
 
@@ -308,7 +308,7 @@ func _set_plugin_settings() -> void:
 	_set_plugin_setting(SHOW_BOTTOM_BAR_WARNING_CONFIG_INFO, _show_bottom_bar_on_warning)
 	_set_plugin_setting(SHOW_BOTTOM_BAR_ERROR_CONFIG_INFO, _show_bottom_bar_on_error)
 	_set_plugin_setting(SHORT_FILE_PATH_CONFIG_INFO, _short_file_path)
-	_set_plugin_setting(SPACES_BETWEEN_FILE_PATH_CONFIG_INFO, _spaces_beetwen_file_path)
+	_set_plugin_setting(SPACES_BETWEEN_FILE_PATH_CONFIG_INFO, _spaces_between_file_path)
 
 
 func _set_plugin_setting(config_info: Dictionary, value: Variant) -> void:
@@ -325,4 +325,4 @@ func _get_plugin_settings() -> void:
 	_show_bottom_bar_on_warning = ProjectSettings.get_setting(SHOW_BOTTOM_BAR_WARNING_CONFIG_INFO["name"], true)
 	_show_bottom_bar_on_error = ProjectSettings.get_setting(SHOW_BOTTOM_BAR_ERROR_CONFIG_INFO["name"], true)
 	_short_file_path = ProjectSettings.get_setting(SHORT_FILE_PATH_CONFIG_INFO["name"], true)
-	_spaces_beetwen_file_path = ProjectSettings.get_setting(SPACES_BETWEEN_FILE_PATH_CONFIG_INFO["name"], true)
+	_spaces_between_file_path = ProjectSettings.get_setting(SPACES_BETWEEN_FILE_PATH_CONFIG_INFO["name"], true)
