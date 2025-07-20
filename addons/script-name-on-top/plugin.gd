@@ -24,9 +24,30 @@ const SHOW_BOTTOM_BAR_WARNING_CONFIG_INFO: Dictionary = {
 	"hint" = PROPERTY_HINT_NONE,
 }
 
+const SHOW_BOTTOM_BAR_ERROR_CONFIG_INFO: Dictionary = {
+	"name" = "addons/script_name_on_top/show_bottom_bar_on_error",
+	"type" = TYPE_BOOL,
+	"hint" = PROPERTY_HINT_NONE,
+}
+
+const SHORT_FILE_PATH_CONFIG_INFO: Dictionary = {
+	"name" = "addons/script_name_on_top/short_file_path",
+	"type" = TYPE_BOOL,
+	"hint" = PROPERTY_HINT_NONE,
+}
+
+const SPACES_BETWEEN_FILE_PATH_CONFIG_INFO: Dictionary = {
+	"name" = "addons/script_name_on_top/spaces_beetwen_file_path",
+	"type" = TYPE_BOOL,
+	"hint" = PROPERTY_HINT_NONE,
+}
+
 var _hide_scripts_panel: bool = false
 var _hide_bottom_bar: bool = false
 var _show_bottom_bar_on_warning: bool = true
+var _show_bottom_bar_on_error: bool = true
+var _short_file_path: bool = true
+var _spaces_between_file_path: bool = true
 
 var _editor_interface: EditorInterface
 var _script_editor: ScriptEditor
@@ -116,15 +137,30 @@ func _process(_delta: float) -> void:
 	_toggle_bottom_bar()
 
 
+func _get_file_display_name(file_path: String) -> String:
+	var result: String = file_path
+	if _short_file_path:
+		var file_path_split: PackedStringArray = file_path.rsplit('/', true, 2)
+		file_path_split.resize(3)
+		result = file_path_split[1].path_join(file_path_split[2])
+	
+	if _spaces_between_file_path:
+		result.replace('/', ' / ')
+	return result
+
 func _build_recent_scripts_list() -> void:
 	_extension_popup.clear()
-	for i in _recently_opened.size():
+	for i: int in _recently_opened.size():
 		var filepath: String = _recently_opened[i]
-		_extension_popup.add_item(filepath)
+		_extension_popup.add_item(_get_file_display_name(filepath), i)
+		_extension_popup.set_item_metadata(i, filepath)
 
 	# Don't bother opening an empty menu
 	if _recently_opened.size() == 0:
 		_extension_popup.visible = false
+	
+	#_extension_popup.size.x = _extension_top_bar.size.x
+
 
 
 func _add_recent_script_to_array(recent_string: String) -> void:
@@ -150,12 +186,20 @@ func _toggle_bottom_bar() -> void:
 	bottom_bar.visible = not _hide_bottom_bar
 
 	# This setting allows for overriding _hide_bottom_bar config
-	# Only when warnings are present in the editor
-	if not _show_bottom_bar_on_warning: return
 
-	var btn_warnings: Button = bottom_bar.get_child(3)
-	if btn_warnings.visible == true:
-		bottom_bar.visible = true
+	# Only when er	rors are present in the editor
+	if _show_bottom_bar_on_error:
+		var btn_errors: Button = bottom_bar.get_child(2)
+		if btn_errors.visible == true:
+			bottom_bar.visible = true
+			return
+	
+	# Only when warnings are present in the editor
+	if not _show_bottom_bar_on_warning:
+		var btn_warnings: Button = bottom_bar.get_child(3)
+		if btn_warnings.visible == true:
+			bottom_bar.visible = true
+			return
 
 
 func _editing_something_new(current_editor: ScriptEditorBase) -> void:
@@ -171,7 +215,7 @@ func _editing_something_new(current_editor: ScriptEditorBase) -> void:
 	else:
 		_extension_top_bar.modulate = Color(0,0,0,0) # Make it invisible if not using it
 
-	_extension_top_bar.text = new_text
+	_extension_top_bar.text = _get_file_display_name(new_text)
 	_extension_top_bar.tooltip_text = new_text
 
 
@@ -233,8 +277,9 @@ func _on_recent_submenu_window_input(event: InputEvent) -> void:
 
 	if event.pressed == true:
 		# Erase item from list
-		_recently_opened.erase(_extension_popup.get_item_text(_extension_popup.get_focused_item()))
+		_recently_opened.erase(_extension_popup.get_item_metadata(_extension_popup.get_focused_item()))
 		_build_recent_scripts_list()
+		
 		if _recently_opened.size() > 0:
 			# Refresh and display shrunken list correctly
 			_extension_top_bar.show_popup()
@@ -251,7 +296,7 @@ func _on_recent_submenu_window_input(event: InputEvent) -> void:
 
 
 func _on_recent_submenu_pressed(pressedID: int) -> void:
-	var recent_string: String = _extension_popup.get_item_text(pressedID)
+	var recent_string: String = _extension_popup.get_item_metadata(pressedID)
 	var load_script: Resource = load(recent_string)
 	if load_script != null:
 		_editor_interface.edit_script(load_script)
@@ -261,6 +306,9 @@ func _set_plugin_settings() -> void:
 	_set_plugin_setting(HIDE_SCRIPTS_PANEL_CONFIG_INFO, _hide_scripts_panel)
 	_set_plugin_setting(HIDE_BOTTOM_BAR_CONFIG_INFO, _hide_bottom_bar)
 	_set_plugin_setting(SHOW_BOTTOM_BAR_WARNING_CONFIG_INFO, _show_bottom_bar_on_warning)
+	_set_plugin_setting(SHOW_BOTTOM_BAR_ERROR_CONFIG_INFO, _show_bottom_bar_on_error)
+	_set_plugin_setting(SHORT_FILE_PATH_CONFIG_INFO, _short_file_path)
+	_set_plugin_setting(SPACES_BETWEEN_FILE_PATH_CONFIG_INFO, _spaces_between_file_path)
 
 
 func _set_plugin_setting(config_info: Dictionary, value: Variant) -> void:
@@ -275,3 +323,6 @@ func _get_plugin_settings() -> void:
 	_hide_scripts_panel = ProjectSettings.get_setting(HIDE_SCRIPTS_PANEL_CONFIG_INFO["name"], false)
 	_hide_bottom_bar = ProjectSettings.get_setting(HIDE_BOTTOM_BAR_CONFIG_INFO["name"], false)
 	_show_bottom_bar_on_warning = ProjectSettings.get_setting(SHOW_BOTTOM_BAR_WARNING_CONFIG_INFO["name"], true)
+	_show_bottom_bar_on_error = ProjectSettings.get_setting(SHOW_BOTTOM_BAR_ERROR_CONFIG_INFO["name"], true)
+	_short_file_path = ProjectSettings.get_setting(SHORT_FILE_PATH_CONFIG_INFO["name"], true)
+	_spaces_between_file_path = ProjectSettings.get_setting(SPACES_BETWEEN_FILE_PATH_CONFIG_INFO["name"], true)
