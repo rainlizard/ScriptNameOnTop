@@ -225,7 +225,7 @@ func _is_main_screen_visible(screen) -> bool:
 
 
 func _get_bottom_bar() -> Control:
-	var bottom_bar: Control = _current_editor
+	var bottom_bar: Node = _current_editor
 	if not is_instance_valid(bottom_bar): return null
 
 	bottom_bar = bottom_bar.get_child(0)
